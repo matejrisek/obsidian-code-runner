@@ -30,15 +30,6 @@ export default class CodeRunnerPlugin extends Plugin {
 				console.log("language: " + language);
 				if (language.length < 1) return;
 
-				// const response = requestUrl({
-				// 	url: "http://localhost:8088/version",
-				// 	method: "GET",
-				// 	headers: {"X-Access-Token": "obsidian-token"}
-				// });
-				//
-				// response.then(res => console.log(res.json));
-
-				console.log("ENTERING");
 				const response = requestUrl({
 					url: "http://localhost:8088/run",
 					method: "POST",
@@ -55,9 +46,28 @@ export default class CodeRunnerPlugin extends Plugin {
 						},
 					})
 				});
-				console.log("EXITING")
-				console.log(response);
-				response.then(response => console.log(response.json));
+
+				response.then(response => {
+					console.log(response.json);
+					const responseJson = response.json;
+
+					const outputElement = document.createElement("code");
+					outputElement.addClass("codeExecutionOutput");
+
+					const stdoutElement = document.createElement("span");
+					stdoutElement.addClass("stdout");
+					stdoutElement.setText(responseJson.stdout);
+
+					const stderrElement = document.createElement("span");
+					stderrElement.addClass("stderr");
+					stderrElement.setText(responseJson.stderr);
+
+					outputElement.appendChild(stdoutElement);
+					outputElement.appendChild(stderrElement);
+
+					codeBlock.parentElement.appendChild(document.createElement("hr"));
+					codeBlock.parentElement.appendChild(outputElement);
+				});
 			});
 	}
 
