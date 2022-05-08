@@ -40,7 +40,7 @@ export default class CodeRunnerPlugin extends Plugin {
 						payload: {
 							"language": language,
 							"files": [{
-								"name": "file",
+								"name": "executionFile",
 								"content": codeBlock.getText()
 							}]
 						},
