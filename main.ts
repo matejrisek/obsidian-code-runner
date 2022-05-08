@@ -14,7 +14,6 @@ export default class CodeRunnerPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		console.log("Registering...");
 		await this.registerRunner(document.body);
 		this.registerMarkdownPostProcessor((element, _context) => {
 			this.registerRunner(element);
@@ -30,7 +29,7 @@ export default class CodeRunnerPlugin extends Plugin {
 				console.log("language: " + language);
 				if (language.length < 1) return;
 
-				const response = requestUrl({
+				const request = {
 					url: "http://localhost:8088/run",
 					method: "POST",
 					contentType: "application/json",
@@ -45,7 +44,9 @@ export default class CodeRunnerPlugin extends Plugin {
 							}]
 						},
 					})
-				});
+				};
+				console.log(request);
+				const response = requestUrl(request);
 
 				response.then(response => {
 					console.log(response.json);
@@ -65,6 +66,21 @@ export default class CodeRunnerPlugin extends Plugin {
 					outputElement.appendChild(stdoutElement);
 					outputElement.appendChild(stderrElement);
 
+					const buttonsContainer = document.createElement("div");
+					buttonsContainer.addClass("buttons-container")
+
+					const runButton = document.createElement("button");
+					runButton.addClass("ocr-button");
+					runButton.setText("> Run");
+
+					const clearButton = document.createElement("button");
+					clearButton.addClass("ocr-button");
+					clearButton.setText("Clear");
+
+					buttonsContainer.appendChild(runButton);
+					buttonsContainer.appendChild(clearButton);
+
+					codeBlock.parentElement.appendChild(buttonsContainer);
 					codeBlock.parentElement.appendChild(document.createElement("hr"));
 					codeBlock.parentElement.appendChild(outputElement);
 				});
